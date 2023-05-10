@@ -1,0 +1,50 @@
+<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--namespace命名空间，为了对sql语句进行隔离，方便管理，mapper开发dao方式，使用namespace有特殊作用  
+mapper代理开发时将namespace指定为mapper接口的全限定名  
+ -->
+<mapper namespace="com.chengxusheji.mapper.StationToStationMapper"> 
+<!--在mapper.xml文件中配置很多的sql语句，执行每个sql语句时，封装为MappedStatement对象 
+mapper.xml以statement为单位管理sql语句  
+ -->
+	<!-- 添加站站查询记录 -->
+	<insert id="addStationToStation" parameterType="stationToStation">
+		insert into t_stationToStation(startStation,endStation) values 
+		(#{startStation.stationId},#{endStation.stationId})
+	</insert>
+
+	<!-- 按照查询条件分页查询站站查询记录 -->
+	<select id="queryStationToStation" resultMap="stationToStationMap" >
+		select t_stationToStation.* from t_stationToStation,t_busStation ${where} and t_stationToStation.startStation = t_busStation.stationId and t_stationToStation.endStation = t_busStation.stationId limit #{startIndex},#{pageSize}
+	</select>
+	<resultMap id="stationToStationMap" type="stationToStation">
+        <id property="id" column="id" />
+        <association property="startStation" column="startStation" select="com.chengxusheji.mapper.BusStationMapper.getBusStation" />
+        <association property="endStation" column="endStation" select="com.chengxusheji.mapper.BusStationMapper.getBusStation" />
+    </resultMap>
+
+    <!-- 按照查询条件查询所有站站查询记录 -->
+	<select id="queryStationToStationList" resultMap="stationToStationMap" >
+		select t_stationToStation.* from t_stationToStation,t_busStation ${where} and t_stationToStation.startStation = t_busStation.stationId and t_stationToStation.endStation = t_busStation.stationId
+	</select>
+
+    <!-- 按照查询条件的站站查询记录数 -->
+	<select id="queryStationToStationCount" resultType="int">
+		select count(*) from t_stationToStation,t_busStation ${where} and t_stationToStation.startStation = t_busStation.stationId and t_stationToStation.endStation = t_busStation.stationId
+	</select>
+
+	<!-- 根据主键查询某个站站查询记录 -->
+	<select id="getStationToStation" parameterType="int" resultMap="stationToStationMap">
+		select * from t_stationToStation where t_stationToStation.id = #{id}
+	</select>
+
+	<!-- 更新站站查询记录 -->
+	<update id="updateStationToStation" parameterType="stationToStation">
+		update t_stationToStation set startStation=#{startStation.stationId},endStation=#{endStation.stationId} where id = #{id}
+	</update>
+
+	<!-- 删除站站查询记录 -->
+	<delete id="deleteStationToStation" parameterType="int">
+		delete from t_stationToStation where id=#{id}
+	</delete>
+
+</mapper>
